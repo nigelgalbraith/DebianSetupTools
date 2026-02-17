@@ -44,7 +44,7 @@ Each tool is defined through a **constants module**, which specifies:
 - Validation rules
 - Dependencies
 - Available actions
-- Pipeline steps (pre and exec phases)
+- Pipeline steps
 
 The loader (`DebianLoader.py`) handles:
 

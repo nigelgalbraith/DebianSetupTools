@@ -5,6 +5,7 @@
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.copyName",
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.src",
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.dest",
+    "<MODEL_ID>.Backup.<VALUES>.CopyFoldersExclude",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.copyName",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.src",
@@ -21,6 +22,7 @@
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.<VALUES>.copyName.<VALUES>",
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.<VALUES>.src.<VALUES>",
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.<VALUES>.dest.<VALUES>",
+    "<MODEL_ID>.Backup.<VALUES>.CopyFoldersExclude.<VALUES>",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.<VALUES>.copyName.<VALUES>",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.<VALUES>.src.<VALUES>",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.<VALUES>.dest.<VALUES>",
@@ -39,6 +41,17 @@
               "src": "$HOME/Documents/GitHub/DebianScripts/constants",
               "dest": "$HOME/Documents/GitHub/Backups/Debian/constants"
             }
+          ],
+          "CopyFoldersExclude": [
+            ".git/",
+            ".github/",
+            ".gitignore",
+            ".gitattributes",
+            ".gitmodules",
+            "*.log",
+            "__pycache__/",
+            ".venv/",
+            "node_modules/"
           ],
           "CopyFiles": [
             {
@@ -64,6 +77,7 @@
               "dest": "$HOME/Documents/GitHub/Backups/TextCreator"
             }
           ],
+          "CopyFoldersExclude": [],
           "CopyFiles": [],
           "ZipArchives": [
             {
@@ -83,6 +97,7 @@
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.<VALUES>.copyName.<VALUES>": "Logical name used for logging/display.",
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.<VALUES>.src.<VALUES>": "Source folder path.",
     "<MODEL_ID>.Backup.<VALUES>.CopyFolders.<VALUES>.dest.<VALUES>": "Destination folder path.",
+    "<MODEL_ID>.Backup.<VALUES>.CopyFoldersExclude.<VALUES>": "Optional list of rsync exclude patterns applied when copying folders. Patterns are relative to the folder copy source root (e.g., 'config/Desktop/', '*.log', '.git/').",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.<VALUES>": "List of file copy entries.",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.<VALUES>.copyName.<VALUES>": "Logical name used for logging/display.",
     "<MODEL_ID>.Backup.<VALUES>.CopyFiles.<VALUES>.src.<VALUES>": "Source file path.",

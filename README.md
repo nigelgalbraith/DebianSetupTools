@@ -94,7 +94,7 @@ sudo python3 DebianLoader.py
 
 ## CLI Arguments (Supported)
 
-Your loader supports the following flags (implemented in `modules/state_machine_utils.py`):
+The loader supports the following flags (implemented in `modules/state_machine_utils.py`):
 
 - `--constants`
   Select which constants module to run (tool selection).
@@ -182,7 +182,6 @@ This repo is built around:
 - small modules that do one thing
 - predictable execution flow
 - explicit validation before changes
-- no “giant script that does everything”
 
 ---
 

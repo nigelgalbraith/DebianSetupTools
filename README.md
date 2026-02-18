@@ -185,6 +185,13 @@ This repo is built around:
 
 ---
 
+
+## License
+
+MIT License.
+
+Anyone is free to use, modify, distribute, or improve this code.
+
 ## License
 MIT License.
 

@@ -18,7 +18,7 @@ import pwd
 import grp
 from shutil import which
 from pathlib import Path
-from typing import List, Sequence, Dict, Any, Union
+from typing import List, Sequence, Dict, Any, Union, Any, Tuple, Optional
 
   
 # ----------------------------------------------------------------------------
@@ -421,12 +421,13 @@ def copy_file(src: str | Path, dest: str | Path) -> bool:
 
 
 def copy_file_dict(mapping: Any) -> bool:
-    """Copy multiple files or directories from dict or list jobs (expands ~ and $VARS)."""
+    """Copy multiple files or directories using rsync (expands ~ and $VARS)."""
     results: List[bool] = []
     if isinstance(mapping, dict):
-        items = [(s, d, None) for s, d in mapping.items()]
+        items: List[Tuple[Any, Any, Optional[str]]] = [(s, d, None) for s, d in mapping.items()]
     elif isinstance(mapping, list):
-        items = [(it.get("src"), it.get("dest"), it.get("name")) for it in mapping if isinstance(it, dict)]
+        items = [(it.get("src"), it.get("dest"), it.get("name"))
+                 for it in mapping if isinstance(it, dict)]
     else:
         print(f"[ERROR] copy_file_dict: unsupported type {type(mapping).__name__}")
         return False
@@ -437,40 +438,78 @@ def copy_file_dict(mapping: Any) -> bool:
         try:
             src = os.path.expanduser(os.path.expandvars(str(src_raw)))
             dest = os.path.expanduser(os.path.expandvars(str(dest_raw)))
-
+            if not os.path.exists(src):
+                raise FileNotFoundError(f"Source not found: {src}")
             if os.path.isdir(src):
-                shutil.copytree(src, dest, dirs_exist_ok=True)
-                results.append(True)
+                os.makedirs(dest, exist_ok=True)
+                src_arg = src.rstrip(os.sep) + os.sep
+                dest_arg = dest.rstrip(os.sep) + os.sep
+                cmd = ["rsync", "-a", src_arg, dest_arg]
             else:
                 Path(dest).parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src, dest)
-                results.append(True)
+                cmd = ["rsync", "-a", src, dest]
+            subprocess.run(cmd, check=True)
+            results.append(True)
         except Exception as e:
             print(f"[ERROR] Failed to copy {src_raw} → {dest_raw}: {e}")
             results.append(False)
     return all(results)
 
-
-def copy_folder_dict(mapping: Any) -> bool:
-    """Copy multiple folders from dict or list jobs (expands ~ and $VARS)."""
+def copy_folder_dict(
+    mapping: Any,
+    exclude: Optional[List[str]] = None,
+    *,
+    delete_extra: bool = False
+) -> bool:
+    """Copy multiple folders using rsync (expands ~ and $VARS)."""
     results: List[bool] = []
     if isinstance(mapping, dict):
         items = [(s, d, None) for s, d in mapping.items()]
     elif isinstance(mapping, list):
-        items = [(it.get("src"), it.get("dest"), it.get("name")) for it in mapping if isinstance(it, dict)]
+        items = [
+            (it.get("src"), it.get("dest"), it.get("copyName"))
+            for it in mapping
+            if isinstance(it, dict)
+        ]
     else:
         print(f"[ERROR] copy_folder_dict: unsupported type {type(mapping).__name__}")
         return False
     print(f"[APPLY] FolderCopies ({len(items)})")
+    exclude_patterns: List[str] = []
+    if exclude:
+        for p in exclude:
+            if p is None:
+                continue
+            exclude_patterns.append(str(p))
     for src_raw, dest_raw, name in items:
         label = f"{name}: " if name else ""
         print(f"  - {label}{src_raw} -> {dest_raw}")
         try:
+            if not src_raw or not dest_raw:
+                raise ValueError("Missing src or dest")
             src = os.path.expanduser(os.path.expandvars(str(src_raw)))
             dest = os.path.expanduser(os.path.expandvars(str(dest_raw)))
             if not os.path.isdir(src):
                 raise FileNotFoundError(f"Source folder not found: {src}")
-            shutil.copytree(src, dest, dirs_exist_ok=True)
+            os.makedirs(dest, exist_ok=True)
+            src_arg = src.rstrip(os.sep) + os.sep
+            dest_arg = dest.rstrip(os.sep) + os.sep
+            cmd = ["rsync", "-a"]
+            if delete_extra:
+                cmd.append("--delete")
+            for pattern in exclude_patterns:
+                cmd.extend(["--exclude", pattern])
+            cmd += [src_arg, dest_arg]
+            proc = subprocess.run(cmd, text=True, capture_output=True)
+            if proc.returncode != 0:
+                raise RuntimeError(proc.stderr.strip() or f"rsync failed with code {proc.returncode}")
+            output = (proc.stdout or "").strip()
+            if output:
+                print("    Changes:")
+                for line in output.splitlines():
+                    print(f"      {line}")
+            else:
+                print("    No changes (already up-to-date)")
             results.append(True)
         except Exception as e:
             print(f"[ERROR] Failed to copy {src_raw} → {dest_raw}: {e}")

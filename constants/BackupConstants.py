@@ -1,6 +1,6 @@
 # constants/BackupConstants.py
 from pathlib import Path
-from modules.system_utils import copy_folder_dict, copy_file_dict, remove_paths, check_folder_path, make_dirs
+from modules.system_utils import copy_folder_dict, copy_file_dict, check_folder_path, make_dirs
 from modules.archive_utils import create_zip_archive 
 from modules.display_utils import display_config_doc
 
@@ -12,10 +12,11 @@ DEFAULT_CONFIG = "Default"
 CONFIG_DOC     = "doc/BackupDoc.json"
 
 # === JSON KEYS ===
-KEY_SOURCE_FOLDERS  = "CopyFolders"
-KEY_SOURCE_FILES    = "CopyFiles"
-KEY_ZIP_ARCHIVES    = "ZipArchives"
-KEY_CHECK_PATH      = "CheckPath"
+KEY_SOURCE_FOLDERS          = "CopyFolders"
+KEY_COPY_FOLDERS_EXCLUDE    = "CopyFoldersExclude"
+KEY_SOURCE_FILES            = "CopyFiles"
+KEY_ZIP_ARCHIVES            = "ZipArchives"
+KEY_CHECK_PATH              = "CheckPath"
 
 # === COMMON SUBKEYS ===
 SUBKEY_COPY_NAME    = "copyName"
@@ -46,6 +47,7 @@ SECONDARY_VALIDATION = {
         },
         "allow_empty": True,
     },
+
     KEY_SOURCE_FILES: {
         "required_job_fields": {
             SUBKEY_COPY_NAME: str,
@@ -179,7 +181,10 @@ PIPELINE_STATES = {
                 "result": "dirs_ready",
             },
             copy_folder_dict: {
-                "args": [KEY_SOURCE_FOLDERS],
+                "args": [
+                    lambda j, m, c: m.get(KEY_SOURCE_FOLDERS, []),
+                    lambda j, m, c: m.get(KEY_COPY_FOLDERS_EXCLUDE, []),
+                ],
                 "result": "folders_copied",
             },
         },
@@ -216,7 +221,10 @@ PIPELINE_STATES = {
                 "result": "dirs_ready",
             },
             copy_folder_dict: {
-                "args": [KEY_SOURCE_FOLDERS],
+                "args": [
+                    lambda j, m, c: m.get(KEY_SOURCE_FOLDERS, []),
+                    lambda j, m, c: m.get(KEY_COPY_FOLDERS_EXCLUDE, []),
+                ],
                 "result": "folders_copied",
             },
             copy_file_dict: {

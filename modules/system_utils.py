@@ -20,6 +20,13 @@ from shutil import which
 from pathlib import Path
 from typing import List, Sequence, Dict, Any, Union, Any, Tuple, Optional
 
+DEFAULT_EXCLUDES = [
+    ".git/",
+    ".github/",
+    ".gitignore",
+    ".gitattributes",
+    ".gitmodules",
+]
   
 # ----------------------------------------------------------------------------
 # SMALL HELPERS / STATUS
@@ -475,7 +482,7 @@ def copy_folder_dict(
         print(f"[ERROR] copy_folder_dict: unsupported type {type(mapping).__name__}")
         return False
     print(f"[APPLY] FolderCopies ({len(items)})")
-    exclude_patterns: List[str] = []
+    exclude_patterns: List[str] = DEFAULT_EXCLUDES.copy()
     if exclude:
         for p in exclude:
             if p is None:

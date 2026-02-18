@@ -494,7 +494,7 @@ def copy_folder_dict(
             os.makedirs(dest, exist_ok=True)
             src_arg = src.rstrip(os.sep) + os.sep
             dest_arg = dest.rstrip(os.sep) + os.sep
-            cmd = ["rsync", "-a"]
+            cmd = ["rsync", "-a", "--itemize-changes", "--human-readable"]
             if delete_extra:
                 cmd.append("--delete")
             for pattern in exclude_patterns:

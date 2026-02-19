@@ -27,6 +27,14 @@ DEFAULT_EXCLUDES = [
     ".gitattributes",
     ".gitmodules",
 ]
+
+class Colors:
+    GREEN = "\033[92m"
+    BLUE = "\033[94m"
+    RED = "\033[91m"
+    DIM = "\033[2m"
+    RESET = "\033[0m"
+
   
 # ----------------------------------------------------------------------------
 # SMALL HELPERS / STATUS
@@ -413,35 +421,22 @@ def remove_paths(paths) -> bool:
 # COPY / PERMISSIONS / FILE OPS
 # ----------------------------------------------------------------------------
 
-def copy_file(src: str | Path, dest: str | Path) -> bool:
-    """Copy src to dest, overwriting (creates parents if needed)."""
-    try:
-        src_p = Path(src).expanduser().resolve()
-        dest_p = Path(dest).expanduser().resolve()
-        dest_p.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src_p, dest_p)
-        print(f"[OK] Copied '{src_p}' → '{dest_p}'")
-        return True
-    except Exception as e:
-        print(f"[ERROR] Failed to copy '{src}' → '{dest}': {e}")
-        return False
-
-
 def copy_file_dict(mapping: Any) -> bool:
     """Copy multiple files or directories using rsync (expands ~ and $VARS)."""
     results: List[bool] = []
     if isinstance(mapping, dict):
         items: List[Tuple[Any, Any, Optional[str]]] = [(s, d, None) for s, d in mapping.items()]
     elif isinstance(mapping, list):
-        items = [(it.get("src"), it.get("dest"), it.get("name"))
-                 for it in mapping if isinstance(it, dict)]
+        items = [(it.get("src"), it.get("dest"), it.get("name")) for it in mapping if isinstance(it, dict)]
     else:
-        print(f"[ERROR] copy_file_dict: unsupported type {type(mapping).__name__}")
+        print(f"{Colors.RED}[ERROR]{Colors.RESET} copy_file_dict: unsupported type {type(mapping).__name__}")
         return False
-    print(f"[APPLY] CopyFiles ({len(items)})")
+    if not items:
+        print(f"{Colors.BLUE}[INFO]{Colors.RESET} No files to copy.")
+        return True
+    print(f"{Colors.BLUE}[APPLY]{Colors.RESET} CopyFiles ({len(items)})")
     for src_raw, dest_raw, name in items:
         label = f"{name}: " if name else ""
-        print(f"  - {label}{src_raw} -> {dest_raw}")
         try:
             src = os.path.expanduser(os.path.expandvars(str(src_raw)))
             dest = os.path.expanduser(os.path.expandvars(str(dest_raw)))
@@ -451,37 +446,40 @@ def copy_file_dict(mapping: Any) -> bool:
                 os.makedirs(dest, exist_ok=True)
                 src_arg = src.rstrip(os.sep) + os.sep
                 dest_arg = dest.rstrip(os.sep) + os.sep
-                cmd = ["rsync", "-a", src_arg, dest_arg]
+                cmd = ["rsync", "-a", "--info=NAME", src_arg, dest_arg]
             else:
                 Path(dest).parent.mkdir(parents=True, exist_ok=True)
-                cmd = ["rsync", "-a", src, dest]
-            subprocess.run(cmd, check=True)
+                cmd = ["rsync", "-a", "--info=NAME", src, dest]
+            proc = subprocess.run(cmd, text=True, capture_output=True)
+            if proc.returncode != 0:
+                raise RuntimeError(proc.stderr.strip() or f"rsync failed with code {proc.returncode}")
+            output = (proc.stdout or "").strip()
+            print(f"  - {label}{src_raw} -> {dest_raw}")
+            if output:
+                print(f"    {Colors.GREEN}Updated:{Colors.RESET} {output}")
+            else:
+                print(f"    {Colors.DIM}No changes (already up-to-date){Colors.RESET}")
             results.append(True)
         except Exception as e:
-            print(f"[ERROR] Failed to copy {src_raw} → {dest_raw}: {e}")
+            print(f"{Colors.RED}[ERROR]{Colors.RESET} Failed to copy {src_raw} → {dest_raw}: {e}")
             results.append(False)
     return all(results)
 
-def copy_folder_dict(
-    mapping: Any,
-    exclude: Optional[List[str]] = None,
-    *,
-    delete_extra: bool = False
-) -> bool:
+
+def copy_folder_dict(mapping: Any, exclude: Optional[List[str]] = None, *, delete_extra: bool = False) -> bool:
     """Copy multiple folders using rsync (expands ~ and $VARS)."""
     results: List[bool] = []
     if isinstance(mapping, dict):
         items = [(s, d, None) for s, d in mapping.items()]
     elif isinstance(mapping, list):
-        items = [
-            (it.get("src"), it.get("dest"), it.get("copyName"))
-            for it in mapping
-            if isinstance(it, dict)
-        ]
+        items = [(it.get("src"), it.get("dest"), it.get("copyName")) for it in mapping if isinstance(it, dict)]
     else:
-        print(f"[ERROR] copy_folder_dict: unsupported type {type(mapping).__name__}")
+        print(f"{Colors.RED}[ERROR]{Colors.RESET} copy_folder_dict: unsupported type {type(mapping).__name__}")
         return False
-    print(f"[APPLY] FolderCopies ({len(items)})")
+    if not items:
+        print(f"{Colors.BLUE}[INFO]{Colors.RESET} No folders to copy.")
+        return True
+    print(f"{Colors.BLUE}[APPLY]{Colors.RESET} FolderCopies ({len(items)})")
     exclude_patterns: List[str] = DEFAULT_EXCLUDES.copy()
     if exclude:
         for p in exclude:
@@ -501,7 +499,7 @@ def copy_folder_dict(
             os.makedirs(dest, exist_ok=True)
             src_arg = src.rstrip(os.sep) + os.sep
             dest_arg = dest.rstrip(os.sep) + os.sep
-            cmd = ["rsync", "-a", "--itemize-changes", "--human-readable"]
+            cmd = ["rsync", "-a", "--info=NAME"]
             if delete_extra:
                 cmd.append("--delete")
             for pattern in exclude_patterns:
@@ -512,14 +510,14 @@ def copy_folder_dict(
                 raise RuntimeError(proc.stderr.strip() or f"rsync failed with code {proc.returncode}")
             output = (proc.stdout or "").strip()
             if output:
-                print("    Changes:")
+                print(f"    {Colors.GREEN}Changes:{Colors.RESET}")
                 for line in output.splitlines():
                     print(f"      {line}")
             else:
-                print("    No changes (already up-to-date)")
+                print(f"    {Colors.DIM}No changes (already up-to-date){Colors.RESET}")
             results.append(True)
         except Exception as e:
-            print(f"[ERROR] Failed to copy {src_raw} → {dest_raw}: {e}")
+            print(f"{Colors.RED}[ERROR]{Colors.RESET} Failed to copy {src_raw} → {dest_raw}: {e}")
             results.append(False)
     return all(results)
 

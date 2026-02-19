@@ -184,6 +184,9 @@ def create_zip_archive(zips):
     """
     if isinstance(zips, tuple):
         zips = [zips]
+    if not zips:
+        print("[INFO] No zip archives to create.")
+        return True
     for src, output in zips:
         src_path = Path(os.path.expandvars(os.path.expanduser(src)))
         out_path = Path(os.path.expandvars(os.path.expanduser(output)))

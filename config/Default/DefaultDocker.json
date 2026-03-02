@@ -12,7 +12,7 @@
       "dataanalysis-tool": {
         "Name": "dataanalysis-tool",
         "Location": "~/projects/dataAnalysis/dataanalysis-tool/",
-        "Download": "https://raw.githubusercontent.com/nigelgalbraith/portfolio/main/projects/files/DataAnalysisTool.zip",
+        "Download": "https://codeload.github.com/nigelgalbraith/DataAnalysisTool/zip/refs/heads/main",
         "TmpDir": "/tmp/docker_downloads",
         "ComposeFile": "~/projects/dataAnalysis/dataanalysis-tool/docker-compose.yml",
         "ComposeDir": "~/projects/dataAnalysis/dataanalysis-tool",
@@ -23,19 +23,13 @@
         ],
         "Tests": [
           {"label": "heathcheck", "path": "~/Documents/GitHub/DebianScripts/settings/tests/common/healthcheck.py"},
-          {"label": "api-heathcheck", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/api_health.py"},
-          {"label": "openapi", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/api_openapi_json.py"},
-          {"label": "docs", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/api_docs.py"},
-          {"label": "pages", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/api_pages.py"},
-          {"label": "databases", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/api_databases.py"},
-          {"label": "tables", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/api_tables.py"},
-          {"label": "columns", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/api_columns.py"}
+          {"label": "route-tests", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/routes-tests.py"}
         ]
       },
       "language-translator": {
         "Name": "language-translator",
         "Location": "~/projects/AI/LanguageTranslator/",
-        "Download": "https://raw.githubusercontent.com/nigelgalbraith/portfolio/main/projects/files/LanguageTranslator.zip",
+        "Download": "https://codeload.github.com/nigelgalbraith/LanguageTranslator/zip/refs/heads/main",
         "TmpDir": "/tmp/docker_downloads",
         "ComposeFile": "~/projects/AI/LanguageTranslator/docker-compose.yml",
         "ComposeDir": "~/projects/AI/LanguageTranslator",
@@ -52,13 +46,32 @@
       "text-creator": {
         "Name": "text-creator",
         "Location": "~/projects/AI/TextCreator/",
-        "Download": "https://raw.githubusercontent.com/nigelgalbraith/portfolio/main/projects/files/TextCreator.zip",
+        "Download": "https://codeload.github.com/nigelgalbraith/PromptTextCreator/zip/refs/heads/main",
         "TmpDir": "/tmp/docker_downloads",
         "ComposeFile": "~/projects/AI/TextCreator/docker-compose.yml",
         "ComposeDir": "~/projects/AI/TextCreator",
         "ComposeContainers": [
           "text-generator-ui",
           "ollama",
+          "piper"
+        ],
+        "Tests": [
+          {"label": "heathcheck", "path": "~/Documents/GitHub/DebianScripts/settings/tests/common/healthcheck.py"}
+        ]
+      },
+      "Prompt-creator": {
+        "Name": "prompt-creator",
+        "Location": "~/projects/AI/PromptForge/",
+        "Download": "https://codeload.github.com/nigelgalbraith/PromptForge/zip/refs/heads/main",
+        "TmpDir": "/tmp/docker_downloads",
+        "ComposeFile": "~/projects/AI/PromptForge/docker-compose.yml",
+        "ComposeDir": "~/projects/AI/PromptForge",
+        "ComposeContainers": [
+          "web",
+          "api",
+          "ollama",
+          "openwebui",
+          "localai",
           "piper"
         ],
         "Tests": [

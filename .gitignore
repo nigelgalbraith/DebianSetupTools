@@ -6,3 +6,4 @@ __pycache__/
 # Optional: virtual environments
 venv/
 .env/
+modules/__init__.py

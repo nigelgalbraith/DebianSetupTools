@@ -7,7 +7,7 @@
     "<MODEL_ID>.ShutdownServices.<VALUES>.ScriptDest",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ServiceSrc",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ServiceDest",
-    "<MODEL_ID>.ShutdownServices.<VALUES>.LogPath",
+    "<MODEL_ID>.ShutdownServices.<VALUES>.LogName",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ConfigSrc",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ConfigDest"
   ],
@@ -20,7 +20,7 @@
     "<MODEL_ID>.ShutdownServices.<VALUES>.ScriptDest.<VALUES>",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ServiceSrc.<VALUES>",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ServiceDest.<VALUES>",
-    "<MODEL_ID>.ShutdownServices.<VALUES>.LogPath.<VALUES>",
+    "<MODEL_ID>.ShutdownServices.<VALUES>.LogName.<VALUES>",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ConfigSrc.<VALUES>",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ConfigDest.<VALUES>"
   ],
@@ -34,7 +34,7 @@
           "ScriptDest": "/usr/local/bin/backup-on-shutdown.sh",
           "ServiceSrc": "settings/services/backup-on-shutdown.service",
           "ServiceDest": "/etc/systemd/system/backup-on-shutdown.service",
-          "LogPath": "/var/log/backup-on-shutdown.log",
+          "LogName": "backup-on-shutdown",
           "ConfigSrc": "",
           "ConfigDest": ""
         },
@@ -45,7 +45,7 @@
           "ScriptDest": "/usr/local/bin/cleanup-temp.sh",
           "ServiceSrc": "settings/services/cleanup-temp.service",
           "ServiceDest": "/etc/systemd/system/cleanup-temp.service",
-          "LogPath": "/var/log/cleanup-temp.log",
+          "LogName": "cleanup-temp",
           "ConfigSrc": "",
           "ConfigDest": ""
         }
@@ -60,7 +60,7 @@
     "<MODEL_ID>.ShutdownServices.<VALUES>.ScriptDest.<VALUES>": "Destination path where the script will be installed.",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ServiceSrc.<VALUES>": "Source systemd unit file in your repo/project.",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ServiceDest.<VALUES>": "Destination systemd unit path.",
-    "<MODEL_ID>.ShutdownServices.<VALUES>.LogPath.<VALUES>": "Where the service/script should write logs.",
+    "<MODEL_ID>.ShutdownServices.<VALUES>.LogName": "Name of the logrotate config file.",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ConfigSrc.<VALUES>": "Optional config source path (blank if none).",
     "<MODEL_ID>.ShutdownServices.<VALUES>.ConfigDest.<VALUES>": "Optional config destination path (blank if none)."
   }

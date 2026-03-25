@@ -7,7 +7,7 @@
     "<MODEL_ID>.StartupServices.<VALUES>.ScriptDest",
     "<MODEL_ID>.StartupServices.<VALUES>.ServiceSrc",
     "<MODEL_ID>.StartupServices.<VALUES>.ServiceDest",
-    "<MODEL_ID>.StartupServices.<VALUES>.LogPath",
+    "<MODEL_ID>.StartupServices.<VALUES>.LogName",
     "<MODEL_ID>.StartupServices.<VALUES>.ConfigSrc",
     "<MODEL_ID>.StartupServices.<VALUES>.ConfigDest"
   ],
@@ -20,7 +20,7 @@
     "<MODEL_ID>.StartupServices.<VALUES>.ScriptDest.<VALUES>",
     "<MODEL_ID>.StartupServices.<VALUES>.ServiceSrc.<VALUES>",
     "<MODEL_ID>.StartupServices.<VALUES>.ServiceDest.<VALUES>",
-    "<MODEL_ID>.StartupServices.<VALUES>.LogPath.<VALUES>",
+    "<MODEL_ID>.StartupServices.<VALUES>.LogName.<VALUES>",
     "<MODEL_ID>.StartupServices.<VALUES>.ConfigSrc.<VALUES>",
     "<MODEL_ID>.StartupServices.<VALUES>.ConfigDest.<VALUES>"
   ],
@@ -34,7 +34,7 @@
           "ScriptDest": "/usr/local/bin/my-startup-task.sh",
           "ServiceSrc": "settings/services/my-startup-task.service",
           "ServiceDest": "/etc/systemd/system/my-startup-task.service",
-          "LogPath": "/var/log/my-startup-task.log",
+          "LogName": "my-startup-task",
           "ConfigSrc": "settings/services/my-startup-task.conf",
           "ConfigDest": "/etc/my-startup-task.conf"
         },
@@ -45,7 +45,7 @@
           "ScriptDest": "/usr/local/bin/network-warmup.sh",
           "ServiceSrc": "settings/services/network-warmup.service",
           "ServiceDest": "/etc/systemd/system/network-warmup.service",
-          "LogPath": "/var/log/network-warmup.log",
+          "LogName": "network-warmup",
           "ConfigSrc": "",
           "ConfigDest": ""
         }
@@ -60,7 +60,7 @@
     "<MODEL_ID>.StartupServices.<VALUES>.ScriptDest.<VALUES>": "Destination path on the system where the script will be installed.",
     "<MODEL_ID>.StartupServices.<VALUES>.ServiceSrc.<VALUES>": "Source systemd unit file in your repo/project.",
     "<MODEL_ID>.StartupServices.<VALUES>.ServiceDest.<VALUES>": "Destination systemd unit path (commonly /etc/systemd/system/<name>.service).",
-    "<MODEL_ID>.StartupServices.<VALUES>.LogPath.<VALUES>": "Where the service/script should write logs (if your script uses it).",
+    "<MODEL_ID>.ShutdownServices.<VALUES>.LogName": "Name of the logrotate config file.",
     "<MODEL_ID>.StartupServices.<VALUES>.ConfigSrc.<VALUES>": "Optional source config file shipped with the project (blank if none).",
     "<MODEL_ID>.StartupServices.<VALUES>.ConfigDest.<VALUES>": "Optional destination path for the config file (blank if none)."
   }

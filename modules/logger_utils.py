@@ -111,3 +111,12 @@ def install_logrotate_config(template_path, target_name, target_dir="/etc/logrot
     dest_path = Path(target_dir) / target_name
     copyfile(template_path, dest_path)
     os.chmod(dest_path, 0o644)
+    print(f"[OK]   Logrotate config installed → {dest_path}")
+
+
+def remove_logrotate_config(log_name, target_dir="/etc/logrotate.d"):
+    """Remove a logrotate config file from the system logrotate directory if it exists."""
+    path = Path(target_dir) / log_name
+    if path.exists():
+        path.unlink()
+        print(f"[OK]   Logrotate config removed → {path}")

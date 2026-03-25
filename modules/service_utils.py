@@ -32,9 +32,13 @@ def check_service_status(service_name: str) -> bool:
 def remove_path(path: str | Path) -> bool:
     """Delete a file or symlink at `path` and return True on success."""
     try:
-        Path(path).unlink(missing_ok=True)
+        p = Path(path)
+        if p.exists() or p.is_symlink():
+            p.unlink()
+            print(f"[OK]   Removed → {p}")
         return True
-    except Exception:
+    except Exception as e:
+        print(f"[FAIL] Remove failed → {path} ({e})")
         return False
 
 

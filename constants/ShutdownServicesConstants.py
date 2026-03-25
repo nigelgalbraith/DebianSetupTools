@@ -13,7 +13,10 @@ from modules.service_utils import (
     copy_template_optional,
     remove_path_optional,
 )
-from modules.logger_utils import install_logrotate_config
+from modules.logger_utils import (
+    install_logrotate_config,
+    remove_logrotate_config,
+)
 from modules.display_utils import display_config_doc
 
 # === CONFIG PATHS & KEYS ===
@@ -31,7 +34,7 @@ KEY_SCRIPT_DEST  = "ScriptDest"
 KEY_SERVICE_SRC  = "ServiceSrc"
 KEY_SERVICE_DEST = "ServiceDest"
 KEY_SERVICE_NAME = "ServiceName"
-KEY_LOG_PATH     = "LogPath"
+KEY_LOG_NAME     = "LogName"
 KEY_LOGROTATE    = "LogrotateCfg"
 KEY_CONFIG_SRC   = "ConfigSrc"      
 KEY_CONFIG_DEST  = "ConfigDest"     
@@ -45,7 +48,7 @@ VALIDATION_CONFIG = {
         KEY_SCRIPT_DEST: str,
         KEY_SERVICE_SRC: str,
         KEY_SERVICE_DEST: str,
-        KEY_LOG_PATH: str,
+        KEY_LOG_NAME: str,
     },
     "example_config": CONFIG_DOC,
 }
@@ -149,7 +152,7 @@ PLAN_COLUMN_ORDER = [
     KEY_SCRIPT_DEST,
     KEY_SERVICE_SRC,
     KEY_SERVICE_DEST,
-    KEY_LOG_PATH,
+    KEY_LOG_NAME,
     KEY_LOGROTATE,
     KEY_CONFIG_SRC,
     KEY_CONFIG_DEST,
@@ -163,8 +166,8 @@ PIPELINE_STATES = {
     "INSTALL": {
         "pipeline": {
             install_logrotate_config: {
-                "args": [f"meta.{KEY_LOGROTATE}", f"meta.{KEY_LOG_PATH}"],
-                "when": f"meta.{KEY_LOGROTATE} and meta.{KEY_LOG_PATH}",
+                "args": [f"meta.{KEY_LOGROTATE}", f"meta.{KEY_LOG_NAME}"],
+                "when": f"meta.{KEY_LOGROTATE} and meta.{KEY_LOG_NAME}",
                 "result": "_",
             },
             copy_template: {
@@ -190,6 +193,11 @@ PIPELINE_STATES = {
     },
     "UNINSTALL": {
         "pipeline": {
+            remove_logrotate_config: {
+                "args": [f"meta.{KEY_LOG_NAME}"],
+                "when": f"meta.{KEY_LOG_NAME}",
+                "result": "_",
+            },
             stop_and_disable_service: {
                 "args": [f"meta.{KEY_SERVICE_NAME}"],
                 "result": "_",

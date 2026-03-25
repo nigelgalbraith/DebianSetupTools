@@ -697,6 +697,7 @@ class StateMachine:
             self.state = State.FINALIZE
             return
         self._pending_pipeline_spec = pipe
+        log_and_print("")
         self.state = State.EXECUTE
 
 

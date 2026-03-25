@@ -108,6 +108,7 @@ def run_pipeline(active_jobs: Dict[str, Dict[str, Any]],
                 log(f"[ERROR] {job}: {fn.__name__} failed → {e!r}")
         if bool(ctx.get(success_key)):
             success += 1
+        log("")
     log(f"{label}: {success}/{total} succeeded")
 
 

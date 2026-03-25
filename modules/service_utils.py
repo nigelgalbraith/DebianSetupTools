@@ -29,30 +29,6 @@ def check_service_status(service_name: str) -> bool:
         return False
 
 
-def remove_path(path: str | Path) -> bool:
-    """Delete a file or symlink at `path` and return True on success."""
-    try:
-        p = Path(path)
-        if p.exists() or p.is_symlink():
-            p.unlink()
-            print(f"[OK]   Removed → {p}")
-        return True
-    except Exception as e:
-        print(f"[FAIL] Remove failed → {path} ({e})")
-        return False
-
-
-def remove_path_optional(path: str | Path | None) -> bool:
-    """Delete a file/symlink at `path`, but skip (True) if `path` is not provided."""
-    if not path:
-        print("[SKIP] No config to remove (optional).")
-        return True
-    try:
-        Path(path).unlink(missing_ok=True)
-        return True
-    except Exception:
-        return False
-
 # ---------------------------------------------------------------------
 # FILE / TEMPLATE OPERATIONS
 # ---------------------------------------------------------------------
@@ -63,8 +39,23 @@ def copy_template(src: str | Path, dest: str | Path) -> bool:
     try:
         subprocess.run(["cp", str(src), str(dest)], check=True)
         subprocess.run(["chmod", "+x", str(dest)], check=True)
+        print(f"[OK]   File copied → {dest}")
         return True
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(f"[FAIL] Copy failed → {src} → {dest} ({e})")
+        return False
+
+
+def remove_template(path: str | Path) -> bool:
+    """Delete a file or symlink at `path` and return True on success."""
+    try:
+        p = Path(path)
+        if p.exists() or p.is_symlink():
+            p.unlink()
+            print(f"[OK]   Removed → {p}")
+        return True
+    except Exception as e:
+        print(f"[FAIL] Remove failed → {path} ({e})")
         return False
 
 
@@ -117,8 +108,10 @@ def enable_and_start_service(service_name: str) -> bool:
     try:
         subprocess.run(["systemctl", "enable", service_name], check=True)
         subprocess.run(["systemctl", "start", service_name], check=True)
+        print(f"[OK]   Service enabled & started → {service_name}")
         return True
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(f"[FAIL] Enable/start failed → {service_name} ({e})")
         return False
 
 
@@ -127,8 +120,10 @@ def stop_and_disable_service(service_name: str) -> bool:
     try:
         subprocess.run(["systemctl", "stop", service_name], check=True)
         subprocess.run(["systemctl", "disable", service_name], check=True)
+        print(f"[OK]   Service stopped & disabled → {service_name}")
         return True
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(f"[FAIL] Stop/disable failed → {service_name} ({e})")
         return False
 
 

@@ -8,7 +8,7 @@ from modules.service_utils import (
     create_service,
     enable_and_start_service,
     stop_and_disable_service,
-    remove_path,
+    remove_template,
     restart_service,
     copy_template_optional,
     remove_template_optional,
@@ -202,11 +202,11 @@ PIPELINE_STATES = {
                 "args": [f"meta.{KEY_SERVICE_NAME}"],
                 "result": "_",
             },
-            remove_path: {
+            remove_template: {
                 "args": [f"meta.{KEY_SERVICE_DEST}"],
                 "result": "_",
             },
-            remove_path: {
+            remove_template: {
                 "args": [f"meta.{KEY_SCRIPT_DEST}"],
                 "result": "_",
             },

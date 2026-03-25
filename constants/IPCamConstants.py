@@ -6,7 +6,7 @@ from modules.service_utils import (
     create_service,
     enable_and_start_service,
     stop_and_disable_service,
-    remove_path,
+    remove_template,
     restart_service,
 )
 from modules.archive_utils import (
@@ -272,11 +272,11 @@ PIPELINE_STATES = {
                 "args": ["job"],
                 "result": "_",
             },
-            remove_path: {
+            remove_template: {
                 "args": [f"meta.{KEY_SERVICE_DEST}"],
                 "result": "_",
             },
-            remove_path: {
+            remove_template: {
                 "args": [f"meta.{KEY_SYMLINK_PATH}"],
                 "result": "_",
             },
@@ -289,7 +289,7 @@ PIPELINE_STATES = {
                 "args": [f"meta.{KEY_PLAYLIST_FILE}"],
                 "result": "_",
             },
-            remove_path: {
+            remove_template: {
                 "args": [f"meta.{KEY_EPG_FILE}"],
                 "result": "ok",
             },

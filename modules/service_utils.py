@@ -69,23 +69,34 @@ def copy_template(src: str | Path, dest: str | Path) -> bool:
 
 
 def copy_template_optional(src: str | Path | None, dest: str | Path | None) -> bool:
-    """
-    Copy a file to `dest` and mark it executable, but skip if `src` or `dest` is missing.
-
-    Returns True when skipped, False if a copy was attempted and failed.
-    """
+    """Copy a file to `dest` if both paths exist, otherwise skip."""
     if not src or not dest:
-        print("[SKIP] No config to copy (optional).")
+        print("[SKIP] No file to copy (optional).")
         return True
     try:
         subprocess.run(["cp", str(src), str(dest)], check=True, stderr=subprocess.DEVNULL)
-        subprocess.run(["chmod", "+x", str(dest)], check=True, stderr=subprocess.DEVNULL)
-        print(f"[OK]   Optional config copied → {dest}")
+        print(f"[OK]   File copied → {dest}")
         return True
     except subprocess.CalledProcessError:
-        print(f"[SKIPPED] No optional config file present")
+        print("[SKIPPED] Optional file not present")
         return False
 
+
+def remove_template_optional(path: str | Path | None) -> bool:
+    """Remove a file if it exists, otherwise skip."""
+    if not path:
+        print("[SKIP] No file to remove (optional).")
+        return True
+    try:
+        p = Path(path)
+        if p.exists() or p.is_symlink():
+            p.unlink()
+            print(f"[OK]   File removed → {p}")
+        return True
+    except Exception as e:
+        print(f"[FAIL] Remove failed → {path} ({e})")
+        return False
+        
 
 def create_service(src: str | Path, dest: str | Path) -> bool:
     """Copy and register a systemd service unit file (daemon-reload); return True on success."""

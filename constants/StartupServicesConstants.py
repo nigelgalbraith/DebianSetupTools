@@ -11,7 +11,7 @@ from modules.service_utils import (
     remove_path,
     restart_service,
     copy_template_optional,
-    remove_path_optional,
+    remove_template_optional,
 )
 from modules.logger_utils import (
     install_logrotate_config,
@@ -210,7 +210,7 @@ PIPELINE_STATES = {
                 "args": [f"meta.{KEY_SCRIPT_DEST}"],
                 "result": "_",
             },
-            remove_path_optional: {
+            remove_template_optional: {
                 "args": [f"meta.{KEY_CONFIG_DEST}"],
                 "result": "ok",
             },

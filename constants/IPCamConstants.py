@@ -6,7 +6,6 @@ from modules.service_utils import (
     create_service,
     enable_and_start_service,
     stop_and_disable_service,
-    remove_template,
     restart_service,
 )
 from modules.archive_utils import (
@@ -16,7 +15,13 @@ from modules.archive_utils import (
     create_symlink,
     handle_cleanup,
 )
-from modules.system_utils import expand_path, create_user, fix_permissions, run_commands
+from modules.system_utils import (
+    expand_path, 
+    create_user, 
+    fix_permissions, 
+    run_commands,
+    remove_file,
+)
 from modules.camera_utils import (
     write_m3u,
     remove_m3u,
@@ -26,11 +31,11 @@ from modules.camera_utils import (
 from modules.display_utils import display_config_doc
 
 # === CONFIG PATHS & KEYS ===
-PRIMARY_CONFIG   = "config/AppConfigSettings.json"
-JOBS_KEY         = "IPCam"
-CONFIG_TYPE      = "ipcam"
-DEFAULT_CONFIG   = "default"
-CONFIG_DOC       = "doc/IPCamDoc.json"
+PRIMARY_CONFIG      = "config/AppConfigSettings.json"
+JOBS_KEY            = "IPCam"
+CONFIG_TYPE         = "ipcam"
+DEFAULT_CONFIG      = "default"
+CONFIG_DOC          = "doc/IPCamDoc.json"
 
 # === JSON KEYS ===
 KEY_SERVICE_URL        = "ServiceURL"
@@ -66,19 +71,6 @@ VALIDATION_CONFIG = {
         KEY_TMPDIR: str,
         KEY_CAMERAS: list,
     },
-}
-
-# Validate Cameras list entries
-SECONDARY_VALIDATION = {
-    KEY_CAMERAS: {
-        "allow_empty": False,
-        "required_job_fields": {
-            "Name": str,
-            "URL": str,
-            "Description": str,
-        },
-    },
-    "example_config": CONFIG_DOC,
 }
 
 # === SECONDARY VALIDATION ===
@@ -272,11 +264,13 @@ PIPELINE_STATES = {
                 "args": ["job"],
                 "result": "_",
             },
-            remove_template: {
+            "remove_service_dest": {
+                "fn": remove_file,
                 "args": [f"meta.{KEY_SERVICE_DEST}"],
                 "result": "_",
             },
-            remove_template: {
+            "remove_symlink": {
+                "fn": remove_file,
                 "args": [f"meta.{KEY_SYMLINK_PATH}"],
                 "result": "_",
             },
@@ -289,7 +283,8 @@ PIPELINE_STATES = {
                 "args": [f"meta.{KEY_PLAYLIST_FILE}"],
                 "result": "_",
             },
-            remove_template: {
+            "remove_epg": {
+                "fn": remove_file,
                 "args": [f"meta.{KEY_EPG_FILE}"],
                 "result": "ok",
             },

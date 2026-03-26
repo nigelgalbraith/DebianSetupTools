@@ -421,6 +421,68 @@ def remove_paths(paths) -> bool:
 # COPY / PERMISSIONS / FILE OPS
 # ----------------------------------------------------------------------------
 
+
+def copy_script_template(src: str | Path, dest: str | Path) -> bool:
+    """Copy a file to `dest` and mark it executable; return True on success."""
+    try:
+        subprocess.run(["cp", str(src), str(dest)], check=True)
+        subprocess.run(["chmod", "+x", str(dest)], check=True)
+        print(f"[OK]   File copied → {dest}")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"[FAIL] Copy failed → {src} → {dest} ({e})")
+        return False
+
+
+def copy_file(src: str | Path | None, dest: str | Path | None, optional: bool = False) -> bool:
+    """Copy a file to `dest`. If optional=True, skip missing inputs instead of failing."""
+    if not src or not dest:
+        if optional:
+            print("[SKIP] No file to copy (optional).")
+            return True
+        print("[FAIL] Source or destination missing.")
+        return False
+    try:
+        src_path = Path(src)
+        dest_path = Path(dest)
+        if not src_path.exists():
+            if optional:
+                print(f"[SKIP] Optional file not present → {src_path}")
+                return True
+            print(f"[FAIL] Source file missing → {src_path}")
+            return False
+        shutil.copy2(src_path, dest_path)
+        print(f"[OK]   File copied → {dest_path}")
+        return True
+    except Exception as e:
+        print(f"[FAIL] Copy failed → {src} → {dest} ({e})")
+        return False
+
+
+def remove_file(path: str | Path | None, optional: bool = False) -> bool:
+    """Delete a file or symlink. If optional=True, skip if it doesn't exist."""
+    if not path:
+        if optional:
+            print("[SKIP] No file to remove (optional).")
+            return True
+        print("[FAIL] No path provided.")
+        return False
+    try:
+        p = Path(path)
+        if p.exists() or p.is_symlink():
+            p.unlink()
+            print(f"[OK]   Removed → {p}")
+            return True
+        if optional:
+            print(f"[SKIP] File not present (optional) → {p}")
+            return True
+        print(f"[FAIL] File not found → {p}")
+        return False
+    except Exception as e:
+        print(f"[FAIL] Remove failed → {path} ({e})")
+        return False
+    
+
 def copy_file_dict(mapping: Any) -> bool:
     """Copy multiple files or directories using rsync (expands ~ and $VARS)."""
     results: List[bool] = []

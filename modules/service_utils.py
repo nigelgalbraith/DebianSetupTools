@@ -30,64 +30,8 @@ def check_service_status(service_name: str) -> bool:
 
 
 # ---------------------------------------------------------------------
-# FILE / TEMPLATE OPERATIONS
+# SYSTEMD OPERATIONS
 # ---------------------------------------------------------------------
-
-
-def copy_template(src: str | Path, dest: str | Path) -> bool:
-    """Copy a file to `dest` and mark it executable; return True on success."""
-    try:
-        subprocess.run(["cp", str(src), str(dest)], check=True)
-        subprocess.run(["chmod", "+x", str(dest)], check=True)
-        print(f"[OK]   File copied → {dest}")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"[FAIL] Copy failed → {src} → {dest} ({e})")
-        return False
-
-
-def remove_template(path: str | Path) -> bool:
-    """Delete a file or symlink at `path` and return True on success."""
-    try:
-        p = Path(path)
-        if p.exists() or p.is_symlink():
-            p.unlink()
-            print(f"[OK]   Removed → {p}")
-        return True
-    except Exception as e:
-        print(f"[FAIL] Remove failed → {path} ({e})")
-        return False
-
-
-def copy_template_optional(src: str | Path | None, dest: str | Path | None) -> bool:
-    """Copy a file to `dest` if both paths exist, otherwise skip."""
-    if not src or not dest:
-        print("[SKIP] No file to copy (optional).")
-        return True
-    try:
-        subprocess.run(["cp", str(src), str(dest)], check=True, stderr=subprocess.DEVNULL)
-        print(f"[OK]   File copied → {dest}")
-        return True
-    except subprocess.CalledProcessError:
-        print("[SKIPPED] Optional file not present")
-        return False
-
-
-def remove_template_optional(path: str | Path | None) -> bool:
-    """Remove a file if it exists, otherwise skip."""
-    if not path:
-        print("[SKIP] No file to remove (optional).")
-        return True
-    try:
-        p = Path(path)
-        if p.exists() or p.is_symlink():
-            p.unlink()
-            print(f"[OK]   File removed → {p}")
-        return True
-    except Exception as e:
-        print(f"[FAIL] Remove failed → {path} ({e})")
-        return False
-        
 
 def create_service(src: str | Path, dest: str | Path) -> bool:
     """Copy and register a systemd service unit file (daemon-reload); return True on success."""
@@ -97,11 +41,7 @@ def create_service(src: str | Path, dest: str | Path) -> bool:
         return True
     except subprocess.CalledProcessError:
         return False
-
-# ---------------------------------------------------------------------
-# SYSTEMD OPERATIONS
-# ---------------------------------------------------------------------
-
+    
 
 def enable_and_start_service(service_name: str) -> bool:
     """Enable and start a systemd service; return True on success."""

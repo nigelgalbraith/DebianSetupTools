@@ -4,14 +4,15 @@ from pathlib import Path
 
 from modules.service_utils import (
     check_service_status,
-    copy_template,
     create_service,
     enable_and_start_service,
     stop_and_disable_service,
-    remove_template,
     restart_service,
-    copy_template_optional,
-    remove_template_optional,
+)
+from modules.system_utils import (  
+    copy_script_template,
+    copy_file,
+    remove_file,
 )
 from modules.logger_utils import (
     install_logrotate_config,
@@ -170,12 +171,12 @@ PIPELINE_STATES = {
                 "when": f"meta.{KEY_LOGROTATE} and meta.{KEY_LOG_NAME}",
                 "result": "_",
             },
-            copy_template: {
+            copy_script_template: {
                 "args": [f"meta.{KEY_SCRIPT_SRC}", f"meta.{KEY_SCRIPT_DEST}"],
                 "result": "_",
             },
-            copy_template_optional: {
-                "args": [f"meta.{KEY_CONFIG_SRC}", f"meta.{KEY_CONFIG_DEST}"],
+            copy_file: {
+                "args": [f"meta.{KEY_CONFIG_SRC}", f"meta.{KEY_CONFIG_DEST}", True],
                 "result": "_",
             },
             create_service: {
@@ -202,16 +203,19 @@ PIPELINE_STATES = {
                 "args": [f"meta.{KEY_SERVICE_NAME}"],
                 "result": "_",
             },
-            remove_template: {
+            "remove_service_file": {
+                "fn": remove_file,
                 "args": [f"meta.{KEY_SERVICE_DEST}"],
                 "result": "_",
             },
-            remove_template: {
+            "remove_script_file": {
+                "fn": remove_file,
                 "args": [f"meta.{KEY_SCRIPT_DEST}"],
                 "result": "_",
             },
-            remove_template_optional: {
-                "args": [f"meta.{KEY_CONFIG_DEST}"],
+            "remove_config_file": {
+                "fn": remove_file,
+                "args": [f"meta.{KEY_CONFIG_DEST}", True],
                 "result": "ok",
             },
         },

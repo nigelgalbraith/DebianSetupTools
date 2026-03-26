@@ -85,16 +85,22 @@ AVAILABLE_CONSTANTS = {
 
 # === PIPELINE ===
 def run_pipeline(active_jobs: Dict[str, Dict[str, Any]],
-                 pipeline: Dict[Callable, Dict[str, Any]],
+                 pipeline: Dict[Any, Dict[str, Any]],
                  *, label: str, success_key: str,
                  log: Callable[[str], None]) -> None:
-    """Run a function→step-spec pipeline over active_jobs; keep going on step errors."""
+    """Run a pipeline over active_jobs; supports both function-key and 'fn' styles."""
     jobs = active_jobs or {"__setup__": {}}
     success = 0
     total = len(jobs)
     for job, meta in jobs.items():
         ctx: Dict[str, Any] = {}
-        for fn, step in pipeline.items():
+        for key, step in pipeline.items():
+            # --- Resolve function ---
+            fn = key if callable(key) else step.get("fn")
+            if not callable(fn):
+                raise ValueError(f"Invalid pipeline step: {key}")
+            fn_name = fn.__name__
+            # --- Check condition ---
             if not check_when(step.get("when"), job, meta, ctx):
                 continue
             try:
@@ -104,8 +110,12 @@ def run_pipeline(active_jobs: Dict[str, Dict[str, Any]],
                 if rkey is not None:
                     ctx[rkey] = result if result is not None else True
             except Exception as e:
-                ctx.setdefault("errors", []).append({"step": fn.__name__, "error": str(e)})
-                log(f"[ERROR] {job}: {fn.__name__} failed → {e!r}")
+                ctx.setdefault("errors", []).append({
+                    "step": fn_name,
+                    "error": str(e)
+                })
+                log(f"[ERROR] {job}: {fn_name} failed → {e!r}")
+
         if bool(ctx.get(success_key)):
             success += 1
         log("")

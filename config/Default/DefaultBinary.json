@@ -1,0 +1,11 @@
+{
+  "Default": {
+    "Binary": {
+      "yt-dlp": {
+        "DownloadURL": "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp",
+        "InstallPath": "/usr/local/bin/yt-dlp",
+        "DownloadPath": "/tmp/archive_downloads/yt-dlp"
+      }
+    }
+  }
+}

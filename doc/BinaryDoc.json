@@ -1,0 +1,40 @@
+{
+  "FIXED_FIELDS": [
+    "<MODEL_ID>.Binary",
+    "<MODEL_ID>.Binary.<VALUES>.DownloadURL",
+    "<MODEL_ID>.Binary.<VALUES>.DownloadPath",
+    "<MODEL_ID>.Binary.<VALUES>.InstallPath",
+    "<MODEL_ID>.Binary.<VALUES>.PostInstall",
+    "<MODEL_ID>.Binary.<VALUES>.PostUninstall"
+  ],
+  "EDITABLE_FIELDS": [
+    "<MODEL_ID>",
+    "<MODEL_ID>.Binary.<VALUES>",
+    "<MODEL_ID>.Binary.<VALUES>.DownloadURL.<VALUES>",
+    "<MODEL_ID>.Binary.<VALUES>.DownloadPath.<VALUES>",
+    "<MODEL_ID>.Binary.<VALUES>.InstallPath.<VALUES>",
+    "<MODEL_ID>.Binary.<VALUES>.PostInstall.<VALUES>",
+    "<MODEL_ID>.Binary.<VALUES>.PostUninstall.<VALUES>"
+  ],
+  "EXAMPLE": {
+    "<MODEL_ID>": {
+      "Binary": {
+        "yt-dlp": {
+          "DownloadURL": "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp",
+          "DownloadPath": "/tmp/debian_loader_downloads",
+          "InstallPath": "/usr/local/bin/yt-dlp",
+          "PostInstall": [],
+          "PostUninstall": []
+        }
+      }
+    }
+  },
+  "DESCRIPTION": {
+    "<MODEL_ID>.Binary.<VALUES>": "A binary install job that downloads a standalone executable and installs it to a target path.",
+    "<MODEL_ID>.Binary.<VALUES>.DownloadURL.<VALUES>": "Direct URL to the standalone binary file to download.",
+    "<MODEL_ID>.Binary.<VALUES>.DownloadPath.<VALUES>": "Directory where the binary will be downloaded before being moved into place.",
+    "<MODEL_ID>.Binary.<VALUES>.InstallPath.<VALUES>": "Final destination path for the installed binary executable.",
+    "<MODEL_ID>.Binary.<VALUES>.PostInstall.<VALUES>": "Shell commands executed after the binary is installed (optional extra setup).",
+    "<MODEL_ID>.Binary.<VALUES>.PostUninstall.<VALUES>": "Shell commands executed during uninstall cleanup (optional extra cleanup)."
+  }
+}

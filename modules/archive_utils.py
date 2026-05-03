@@ -18,7 +18,7 @@ from zipfile import ZipFile
 # CONSTANTS
 # ---------------------------------------------------------------------
 
-ARCHIVE_EXTENSIONS = (".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".zip")
+ARCHIVE_EXTENSIONS = (".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".zip", ".rar", ".7z")
 
 # ---------------------------------------------------------------------
 # HELPERS
@@ -106,6 +106,10 @@ def install_archive_file(archive_path: Path | str, extract_to: Path | str, strip
             subprocess.run(["tar", "-xf", str(archive_path), "-C", str(extract_to)], check=True)
         elif suffix.endswith(".zip"):
             subprocess.run(["unzip", "-o", str(archive_path), "-d", str(extract_to)], check=True)
+        elif suffix.endswith(".rar"):
+            subprocess.run(["unrar", "x", "-o+", str(archive_path), str(extract_to)], check=True)
+        elif suffix.endswith(".7z"):
+            subprocess.run(["7z", "x", "-y", str(archive_path), f"-o{extract_to}"], check=True)
         else:
             print(f"Unsupported file type: {suffix}")
             return False

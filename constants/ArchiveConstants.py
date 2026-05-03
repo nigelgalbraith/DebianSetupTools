@@ -126,7 +126,7 @@ SUB_MENU = {
 }
 
 # Dependencies needed to fetch & extract archives
-DEPENDENCIES = ["wget", "tar", "unzip"]
+DEPENDENCIES = ["wget", "tar", "unzip", "unrar-free", "p7zip-full"]
 
 # Columns to prioritize in the Planned table
 PLAN_COLUMN_ORDER = [

@@ -133,7 +133,7 @@ SUB_MENU = {
 }
 
 # === DEPENDENCIES ===
-DEPENDENCIES = ["dosbox", "wget", "unzip", "tar"]
+DEPENDENCIES = ["dosbox", "wget", "unzip", "tar", "unrar-free", "p7zip-full"]
 
 # === PLAN TABLE COLUMNS
 PLAN_COLUMN_ORDER = [

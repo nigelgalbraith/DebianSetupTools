@@ -16,7 +16,7 @@ from modules.system_utils import (
     create_group,
     add_user_to_group,
     protect_folders,
-    copy_folder_dict,
+    copy_file_dict,
 )
 from modules.desktop_utils import (
     create_desktop_entry,
@@ -42,7 +42,7 @@ KEY_LAUNCH_CMD     = "LaunchCmd"
 KEY_POST_INSTALL   = "PostInstall"
 KEY_DOWNLOAD_PATH  = "DownloadPath"
 KEY_ICON           = "Icon"
-KEY_ICON_DIR       = "IconDir"
+KEY_ICO_FILE       = "IconFile"
 KEY_CATEGORY       = "Category"
 
 # === MEMBERSHIP / FOLDER ACCESS ===
@@ -67,7 +67,7 @@ VALIDATION_CONFIG = {
         KEY_CHMOD_PATHS: list,
         KEY_CHOWN_PATHS: list,
         KEY_PROTECTED_FOLDERS: list,
-        KEY_ICON_DIR: list,
+        KEY_ICO_FILE: list,
     },
     "example_config": CONFIG_DOC,
 }
@@ -306,8 +306,8 @@ PIPELINE_STATES = {
                 ],
                 "result": "shortcut_created",
             },
-            copy_folder_dict: {
-                "args": [KEY_ICON_DIR],
+            copy_file_dict: {
+                "args": [KEY_ICO_FILE],
                 "result": "settings_folders_copied",
             },
             refresh_desktop_database: {

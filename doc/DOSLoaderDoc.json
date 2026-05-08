@@ -3,10 +3,22 @@
     "<MODEL_ID>.DOSLoader",
     "<MODEL_ID>.DOSLoader.<VALUES>.Name",
     "<MODEL_ID>.DOSLoader.<VALUES>.DownloadURL",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DownloadPath",
     "<MODEL_ID>.DOSLoader.<VALUES>.ExtractTo",
     "<MODEL_ID>.DOSLoader.<VALUES>.CheckPath",
     "<MODEL_ID>.DOSLoader.<VALUES>.StripTopLevel",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DosGroups",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DosUsers",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownGroup",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownUser",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownRecursive",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownPaths",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChmodPaths",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ProtectedFolders",
     "<MODEL_ID>.DOSLoader.<VALUES>.LaunchCmd",
+    "<MODEL_ID>.DOSLoader.<VALUES>.Icon",
+    "<MODEL_ID>.DOSLoader.<VALUES>.IconDir",
+    "<MODEL_ID>.DOSLoader.<VALUES>.Category",
     "<MODEL_ID>.DOSLoader.<VALUES>.PostInstall",
     "<MODEL_ID>.DOSLoader.<VALUES>.Notes"
   ],
@@ -15,12 +27,24 @@
     "<MODEL_ID>.DOSLoader.<VALUES>",
     "<MODEL_ID>.DOSLoader.<VALUES>.Name.<VALUES>",
     "<MODEL_ID>.DOSLoader.<VALUES>.DownloadURL.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DownloadPath.<VALUES>",
     "<MODEL_ID>.DOSLoader.<VALUES>.ExtractTo.<VALUES>",
     "<MODEL_ID>.DOSLoader.<VALUES>.CheckPath.<VALUES>",
     "<MODEL_ID>.DOSLoader.<VALUES>.StripTopLevel.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DosGroups.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DosUsers.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownGroup.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownUser.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownRecursive.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownPaths.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChmodPaths.<VALUES>",
     "<MODEL_ID>.DOSLoader.<VALUES>.LaunchCmd.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.Icon.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.IconDir.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.Category.<VALUES>",
     "<MODEL_ID>.DOSLoader.<VALUES>.PostInstall.<VALUES>",
-    "<MODEL_ID>.DOSLoader.<VALUES>.Notes.<VALUES>"
+    "<MODEL_ID>.DOSLoader.<VALUES>.Notes.<VALUES>",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ProtectedFolders.<VALUES>"
   ],
   "EXAMPLE": {
     "<MODEL_ID>": {
@@ -28,22 +52,47 @@
         "Monkey": {
           "Name": "The Secret of Monkey Island",
           "DownloadURL": "https://archive.org/download/monkey_dos/MONKEY.zip",
-          "ExtractTo": "~/dosgames/monkey",
-          "CheckPath": "~/dosgames/monkey",
+          "DownloadPath": "/tmp/dos_downloads",
+          "ExtractTo": "/home/nigel/dosgames/monkey",
+          "CheckPath": "/home/nigel/dosgames/monkey",
           "StripTopLevel": true,
-          "LaunchCmd": "dosbox -c \"mount c ~/dosgames/monkey\" -c \"c:\" -c \"monkey.exe\"",
+          "DosGroups": ["dosgamers"],
+          "DosUsers": ["nigel", "rdp"],
+          "ChownGroup": "dosgamers",
+          "ChownUser": "nigel",
+          "ChownRecursive": true,
+          "ChownPaths": [
+            {
+              "path": "/home/nigel/dosgames/monkey"
+            }
+          ],
+          "ChmodPaths": [
+            {
+              "path": "/home/nigel/dosgames/monkey",
+              "mode": "3775",
+              "recursive": true
+            }
+          ],
+          "LaunchCmd": "dosbox -c \"mount c /home/nigel/dosgames/monkey\" -c \"c:\" -c \"monkey.exe\"",
+          "Icon": "/home/nigel/dosgames/icons/monkey.png",
+          "IconDir": [
+            {
+              "copyName": "DOS Icons",
+              "src": "settings/dosgameIcons",
+              "dest": "/home/nigel/dosgames/icons"
+            }
+          ],
+          "Category": "Game;",
           "PostInstall": [],
-          "Notes": "Runs in DOSBox. Default launch assumes MONKEY.EXE is present."
-        },
-        "IndianaJonesLC": {
-          "Name": "Indiana Jones and the Last Crusade",
-          "DownloadURL": "https://archive.org/download/JONES_EGA/JONES.zip",
-          "ExtractTo": "~/dosgames/indylc",
-          "CheckPath": "~/dosgames/indylc",
-          "StripTopLevel": true,
-          "LaunchCmd": "dosbox -c \"mount c ~/dosgames/indylc\" -c \"c:\" -c \"indy.exe\"",
-          "PostInstall": [],
-          "Notes": "Runs in DOSBox. Default launch assumes indy.exe is present."
+          "Notes": "Runs in DOSBox. Default launch assumes MONKEY.EXE is present.",
+          "ProtectedFolders": [
+            {
+              "path": "/home/nigel/dosgames/monkey",
+              "owner": "root",
+              "group": "dosgamers",
+              "permissions": "3775"
+            }
+          ]
         }
       }
     }
@@ -52,11 +101,23 @@
     "<MODEL_ID>.DOSLoader.<VALUES>": "A DOS game definition.",
     "<MODEL_ID>.DOSLoader.<VALUES>.Name.<VALUES>": "Human-readable game name.",
     "<MODEL_ID>.DOSLoader.<VALUES>.DownloadURL.<VALUES>": "URL to download the game archive.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DownloadPath.<VALUES>": "Temporary download directory.",
     "<MODEL_ID>.DOSLoader.<VALUES>.ExtractTo.<VALUES>": "Directory where the archive is extracted.",
     "<MODEL_ID>.DOSLoader.<VALUES>.CheckPath.<VALUES>": "Path used to verify installation.",
     "<MODEL_ID>.DOSLoader.<VALUES>.StripTopLevel.<VALUES>": "Remove top-level folder during extraction.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DosGroups.<VALUES>": "Groups created or used for DOS game access.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.DosUsers.<VALUES>": "Users added to DOS access groups.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownGroup.<VALUES>": "Group assigned to installed files.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownUser.<VALUES>": "Owner assigned to installed files.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownRecursive.<VALUES>": "Apply ownership changes recursively.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChownPaths.<VALUES>": "Paths that receive ownership changes.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ChmodPaths.<VALUES>": "Paths that receive permission changes.",
     "<MODEL_ID>.DOSLoader.<VALUES>.LaunchCmd.<VALUES>": "DOSBox launch command.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.Icon.<VALUES>": "PNG icon path used for the desktop launcher.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.IconDir.<VALUES>": "Folder copy mappings used to install icon assets.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.Category.<VALUES>": "Desktop launcher category.",
     "<MODEL_ID>.DOSLoader.<VALUES>.PostInstall.<VALUES>": "Commands run after installation.",
-    "<MODEL_ID>.DOSLoader.<VALUES>.Notes.<VALUES>": "Free-form notes about the game."
+    "<MODEL_ID>.DOSLoader.<VALUES>.Notes.<VALUES>": "Free-form notes about the game.",
+    "<MODEL_ID>.DOSLoader.<VALUES>.ProtectedFolders.<VALUES>": "Protected folders with enforced ownership and permissions."
   }
 }

@@ -5,12 +5,24 @@ from pathlib import Path
 from modules.archive_utils import (
     download_archive_file,
     install_archive_file,
-    uninstall_archive_install,
     check_archive_status,
     handle_cleanup,
 )
 
-from modules.system_utils import run_commands, remove_paths
+from modules.system_utils import (
+    run_commands,
+    chmod_paths,
+    chown_paths,
+    create_group,
+    add_user_to_group,
+    protect_folders,
+    copy_folder_dict,
+)
+from modules.desktop_utils import (
+    create_desktop_entry,
+    remove_desktop_entry,
+    refresh_desktop_database,
+)
 from modules.display_utils import display_config_doc
 
 # === CONFIG PATHS & KEYS ===
@@ -18,7 +30,7 @@ PRIMARY_CONFIG   = "config/AppConfigSettings.json"
 JOBS_KEY         = "DOSLoader"
 CONFIG_TYPE      = "dosloader"
 DEFAULT_CONFIG   = "Default"
-CONFIG_DOC       = "doc/DosLoaderDoc.json"
+CONFIG_DOC       = "doc/DOSLoaderDoc.json"
 
 # === JSON KEYS ===
 KEY_NAME           = "Name"
@@ -29,7 +41,19 @@ KEY_STRIP_TOP      = "StripTopLevel"
 KEY_LAUNCH_CMD     = "LaunchCmd"
 KEY_POST_INSTALL   = "PostInstall"
 KEY_DOWNLOAD_PATH  = "DownloadPath"
+KEY_ICON           = "Icon"
+KEY_ICON_DIR       = "IconDir"
+KEY_CATEGORY       = "Category"
 
+# === MEMBERSHIP / FOLDER ACCESS ===
+KEY_DOS_USERS         = "DosUsers"
+KEY_DOS_GROUPS        = "DosGroups"
+KEY_CHOWN_USER        = "ChownUser"
+KEY_CHOWN_GROUP       = "ChownGroup"
+KEY_CHOWN_PATHS       = "ChownPaths"
+KEY_CHOWN_RECURSIVE   = "ChownRecursive"
+KEY_CHMOD_PATHS       = "ChmodPaths"
+KEY_PROTECTED_FOLDERS = "ProtectedFolders"
 
 # === VALIDATION CONFIG ===
 VALIDATION_CONFIG = {
@@ -40,12 +64,41 @@ VALIDATION_CONFIG = {
         KEY_CHECK_PATH: str,
         KEY_STRIP_TOP: bool,
         KEY_LAUNCH_CMD: str,
+        KEY_CHMOD_PATHS: list,
+        KEY_CHOWN_PATHS: list,
+        KEY_PROTECTED_FOLDERS: list,
+        KEY_ICON_DIR: list,
     },
     "example_config": CONFIG_DOC,
 }
 
 # === SECONDARY VALIDATION  ===
-SECONDARY_VALIDATION = {}
+SECONDARY_VALIDATION = {
+    KEY_CHMOD_PATHS: {
+        "required_job_fields": {
+            "path": str,
+            "mode": str,
+            "recursive": bool,
+        },
+        "allow_empty": True,
+    },
+    KEY_CHOWN_PATHS: {
+        "required_job_fields": {
+            "path": str,
+        },
+        "allow_empty": True,
+    },
+    KEY_PROTECTED_FOLDERS: {
+        "required_job_fields": {
+            "path": str,
+            "owner": str,
+            "group": str,
+            "permissions": str,
+        },
+        "allow_empty": True,
+    },
+    "example_config": CONFIG_DOC,
+}
 
 # === DETECTION CONFIG ===
 DETECTION_CONFIG = {
@@ -65,7 +118,7 @@ LOGS_TO_KEEP    = 10
 ROTATE_LOG_NAME = f"{LOG_PREFIX}_*.log"
 
 # === USER / LABELS ===
-REQUIRED_USER     = "Standard"
+REQUIRED_USER     = "root"
 INSTALLED_LABEL   = "INSTALLED"
 UNINSTALLED_LABEL = "UNINSTALLED"
 
@@ -85,23 +138,31 @@ ACTIONS = {
         "label": INSTALLED_LABEL,
         "prompt": "Proceed with installation? [y/n]: ",
         "execute_state": "INSTALL",
-        "post_state": "CONFIG_LOADING",
+        "post_state": "MENU_SELECTION",
     },
-    f"Remove {JOBS_KEY} game": {
-        "verb": "removal",
+    f"Update {JOBS_KEY} permissions": {
+        "verb": "update permissions",
         "filter_status": True,
-        "label": UNINSTALLED_LABEL,
-        "prompt": "Proceed with removal (moves to Trash)? [y/n]: ",
-        "execute_state": "UNINSTALL",
-        "post_state": "CONFIG_LOADING",
+        "label": INSTALLED_LABEL,
+        "prompt": "Update permissions now? [y/n]: ",
+        "execute_state": "UPDATE_PERMISSIONS",
+        "post_state": "MENU_SELECTION",
     },
-    f"Run {JOBS_KEY} game": {
-        "verb": "launch",
+    f"Create {JOBS_KEY} game shortcut": {
+        "verb": "create shortcut",
         "filter_status": True,
         "label": INSTALLED_LABEL,
         "prompt": "Launch now? [y/n]: ",
-        "execute_state": "RUN",
+        "execute_state": "CREATE_SHORTCUT",
         "post_state": "MENU_SELECTION",
+    },
+    f"Remove {JOBS_KEY} game shortcut": {
+        "verb": "remove shortcut",
+        "filter_status": None,
+        "label": None,
+        "prompt": f"Remove {JOBS_KEY} game shortcut? [y/n]: ",
+        "execute_state": "REMOVE_SHORTCUT",
+        "post_state": "CONFIG_LOADING",
     },
     "Show config help": {
         "verb": "help",
@@ -109,7 +170,7 @@ ACTIONS = {
         "label": None,
         "prompt": "Show config help now? [y/n]: ",
         "execute_state": "SHOW_CONFIG_DOC",
-        "post_state": "CONFIG_LOADING",
+        "post_state": "MENU_SELECTION",
         "skip_sub_select": True,
         "skip_prepare_plan": True,
         "skip_confirm": True,
@@ -165,35 +226,116 @@ PIPELINE_STATES = {
             run_commands: {
                 "args": [KEY_POST_INSTALL],
             },
+            create_group: {
+                "args": [lambda j, m, c: m.get(KEY_DOS_GROUPS)],
+                "result": "groups_ok",
+            },
+            add_user_to_group: {
+                "args": [
+                    lambda j, m, c: m.get(KEY_DOS_USERS),
+                    lambda j, m, c: m.get(KEY_DOS_GROUPS),
+                ],
+                "result": "dos_groups_added",
+            },
+            chown_paths: {
+                "args": [
+                    lambda j, m, c: m.get(KEY_CHOWN_USER),
+                    KEY_CHOWN_PATHS,
+                    lambda j, m, c: bool(m.get(KEY_CHOWN_RECURSIVE)),
+                    lambda j, m, c: m.get(KEY_CHOWN_GROUP),
+                ],
+                "result": "chown_ok",
+            },
+            chmod_paths: {
+                "args": [KEY_CHMOD_PATHS],
+                "result": "chmod_ok",
+            },
+            protect_folders: {
+                "args": [KEY_PROTECTED_FOLDERS],
+                "result": "protected_ok",
+            },
         },
         "label": INSTALLED_LABEL,
         "success_key": "installed",
         "post_state": "CONFIG_LOADING",
         },
-    "UNINSTALL": {
+    "UPDATE_PERMISSIONS": {
         "pipeline": {
-            uninstall_archive_install: {
-                "args": [KEY_CHECK_PATH],
-                "result": "uninstalled",
+            create_group: {
+                "args": [lambda j, m, c: m.get(KEY_DOS_GROUPS)],
+                "result": "groups_ok",
             },
-            remove_paths: {
-                "args": [KEY_EXTRACT_TO],
+            add_user_to_group: {
+                "args": [
+                    lambda j, m, c: m.get(KEY_DOS_USERS),
+                    lambda j, m, c: m.get(KEY_DOS_GROUPS),
+                ],
+                "result": "dos_groups_added",
+            },
+            chown_paths: {
+                "args": [
+                    lambda j, m, c: m.get(KEY_CHOWN_USER),
+                    KEY_CHOWN_PATHS,
+                    lambda j, m, c: bool(m.get(KEY_CHOWN_RECURSIVE)),
+                    lambda j, m, c: m.get(KEY_CHOWN_GROUP),
+                ],
+                "result": "chown_ok",
+            },
+            chmod_paths: {
+                "args": [KEY_CHMOD_PATHS],
+                "result": "chmod_ok",
+            },
+            protect_folders: {
+                "args": [KEY_PROTECTED_FOLDERS],
+                "result": "protected_ok",
             },
         },
-        "label": UNINSTALLED_LABEL,
-        "success_key": "uninstalled",
+        "label": "PERMISSIONS_UPDATED",
+        "success_key": "protected_ok",
         "post_state": "CONFIG_LOADING",
-        },
-    "RUN": {
+    },
+    "CREATE_SHORTCUT": {
         "pipeline": {
-            run_commands: {
-                "args": [KEY_LAUNCH_CMD],
-                "result": "ran",
+            create_desktop_entry: {
+                "args": [
+                    KEY_NAME,
+                    KEY_LAUNCH_CMD,
+                    lambda j, m, c: m.get(KEY_CHOWN_USER),
+                    KEY_ICON,
+                    KEY_CATEGORY,
+                ],
+                "result": "shortcut_created",
+            },
+            copy_folder_dict: {
+                "args": [KEY_ICON_DIR],
+                "result": "settings_folders_copied",
+            },
+            refresh_desktop_database: {
+                "args": [],
+                "result": "desktop_cache_refreshed",
             },
         },
-        "label": INSTALLED_LABEL,
-        "success_key": "ran",
-        "post_state": "MENU_SELECTION",
+        "label": "SHORTCUT",
+        "success_key": "shortcut_created",
+        "post_state": "CONFIG_LOADING",
+    },
+    "REMOVE_SHORTCUT": {
+        "pipeline": {
+            remove_desktop_entry: {
+                "args": [
+                    KEY_NAME,
+                    lambda j, m, c: m.get(KEY_CHOWN_USER),
+                ],
+                "result": "shortcut_removed",
+            },
+            refresh_desktop_database: {
+                "args": [],
+                "result": "desktop_cache_refreshed",
+            },
+        },
+        "label": "SHORTCUT_REMOVED",
+        "success_key": "shortcut_removed",
+        "post_state": "CONFIG_LOADING",
     },
     "SHOW_CONFIG_DOC": {
         "pipeline": {

@@ -9,11 +9,11 @@
           { "copyName": "Flex icons", "src": "settings/flex/icons", "dest": "/home/launcher/.config/flex-launcher/icons" }
         ],
         "SettingsFiles": [
-          { "copyName": "FlexINI", "src": "settings/flex/Desktop/Desktop-Flex-Template-config.ini", "dest": "/home/launcher/.config/flex-launcher/config.ini" }
+          { "copyName": "FlexINI", "src": "settings/flex/Default/Default-Flex-Template-config.ini", "dest": "/home/launcher/.config/flex-launcher/config.ini" }
         ],
 
         "SettingsChmodPaths": [
-          { "path": "/home/launcher/.config/flex-launcher/icons", "mode": "755" },
+          { "path": "/home/launcher/.config/flex-launcher/Default/icons", "mode": "755" },
           { "path": "/home/launcher/.config/flex-launcher/config.ini", "mode": "644" }
         ],
         "SettingsChownPaths": [
@@ -35,9 +35,9 @@
         ],
 
         "KioskFiles": [
-          { "copyName": "LightDM autologin", "src": "settings/flex/Desktop/Desktop-LightDM-50-launcher.conf", "dest": "/etc/lightdm/lightdm.conf.d/50-launcher.conf" },
-          { "copyName": "Openbox autostart", "src": "settings/flex/Desktop/Desktop-Flex-autostart.sh", "dest": "/home/launcher/.config/openbox/autostart" },
-          { "copyName": "Launcher Xsession", "src": "settings/flex/Desktop/Desktop-Flex-xsession", "dest": "/home/launcher/.xsession" }
+          { "copyName": "LightDM autologin", "src": "settings/flex/Default/Default-LightDM-50-launcher.conf", "dest": "/etc/lightdm/lightdm.conf.d/50-launcher.conf" },
+          { "copyName": "Openbox autostart", "src": "settings/flex/Default/Default-Flex-autostart.sh", "dest": "/home/launcher/.config/openbox/autostart" },
+          { "copyName": "Launcher Xsession", "src": "settings/flex/Default/Default-Flex-xsession", "dest": "/home/launcher/.xsession" }
         ],
 
         "ChmodPaths": [

@@ -1,29 +1,48 @@
 {
   "Default": {
-    "Games": {
-      "Example1": {
-        "Name": "Example Game One",
-        "DownloadURL": "https://example.com/game1.zip",
-        "ExtractTo": "~/games/game1",
-        "CheckPath": "~/games/game1",
+    "DOSLoader": {
+      "Monkey":
+      {
+        "Name": "The Secret of Monkey Island",
+        "DownloadURL": "https://archive.org/download/monkey_dos/MONKEY.zip",
+        "DownloadPath": "/tmp/dos_downloads",
+        "ExtractTo": "/srv/dosgames/monkey",
+        "CheckPath": "/srv/dosgames/monkey",
         "StripTopLevel": true,
-        "LaunchCmd": "dosbox -c \"mount c ~/games/game1\" -c \"c:\" -c \"game1.exe\"",
-        "PostInstall": [
-          "echo 'Post-install step for Game One'"
+        "DosGroups": ["dosgamers"],
+        "DosUsers": ["user1","user2"],
+        "ChownGroup": "dosgamers",
+        "ChownUser": "user1",
+        "ChownRecursive": true,
+        "ChownPaths": [
+          {"path": "/srv/dosgames/monkey"}
         ],
-        "Notes": "Runs in DOSBox. Default launch assumes GAME1.EXE is present."
-      },
-      "Example2": {
-        "Name": "Example Game Two",
-        "DownloadURL": "https://example.com/game2.zip",
-        "ExtractTo": "~/games/game2",
-        "CheckPath": "~/games/game2",
-        "StripTopLevel": false,
-        "LaunchCmd": "dosbox -c \"mount c ~/games/game2\" -c \"c:\" -c \"game2.bat\"",
-        "PostInstall": [
-          "echo 'Post-install step for Game Two'"
+        "ChmodPaths": [
+          {"path": "/srv/dosgames/monkey",
+            "mode": "2775",
+            "recursive": true
+          }
         ],
-        "Notes": "Another sample DOSBox game with a BAT launcher."
+        "LaunchCmd": "dosbox -c \"mount c /srv/dosgames/monkey\" -c \"c:\" -c \"monkey.exe\"",
+        "Icon": "/srv/dosgames/icons/monkey.png",
+        "IconFile":   [
+          {
+            "copyName": "DOS Icons",
+            "src": "settings/dosgameIcons/monkey.png",
+            "dest": "/srv/dosgames/icons/monkey.png"
+          }
+        ],
+        "Category": "Game;",
+        "PostInstall": [],
+        "Notes": "Runs in DOSBox. Default launch assumes MONKEY.EXE is present.",
+        "ProtectedFolders": [
+          {
+            "path": "/srv/dosgames",
+            "owner": "root",
+            "group": "dosgamers",
+            "permissions": "3775"
+          }
+        ]
       }
     }
   }

@@ -22,8 +22,8 @@
           "dataanalysis-web"
         ],
         "Tests": [
-          {"label": "heathcheck", "path": "~/Documents/GitHub/DebianScripts/settings/tests/common/healthcheck.py"},
-          {"label": "route-tests", "path": "~/Documents/GitHub/DebianScripts/settings/tests/dataanalysis-tool/routes/routes-tests.py"}
+          {"label": "heathcheck", "path": "/Documents/GitHub/Private/DebianScripts/DebianLoader/settings/tests/common/healthcheck.py"},
+          {"label": "route-tests", "path": "/Documents/GitHub/Private/DebianScripts/DebianLoader/settings/tests/dataanalysis-tool/routes/routes-tests.py"}
         ]
       },
       "language-translator": {
@@ -40,7 +40,7 @@
           "piper-zh"
         ],
         "Tests": [
-          {"label": "heathcheck", "path": "~/Documents/GitHub/DebianScripts/settings/tests/common/healthcheck.py"}
+          {"label": "heathcheck", "path": "/Documents/GitHub/Private/DebianScripts/DebianLoader/settings/tests/common/healthcheck.py"}
         ]
       },
       "text-creator": {
@@ -56,7 +56,7 @@
           "piper"
         ],
         "Tests": [
-          {"label": "heathcheck", "path": "~/Documents/GitHub/DebianScripts/settings/tests/common/healthcheck.py"}
+          {"label": "heathcheck", "path": "/Documents/GitHub/Private/DebianScripts/DebianLoader/settings/tests/common/healthcheck.py"}
         ]
       },
       "Prompt-creator": {
@@ -75,7 +75,7 @@
           "piper"
         ],
         "Tests": [
-          {"label": "heathcheck", "path": "~/Documents/GitHub/DebianScripts/settings/tests/common/healthcheck.py"}
+          {"label": "heathcheck", "path": "/Documents/GitHub/Private/DebianScripts/DebianLoader/settings/tests/common/healthcheck.py"}
         ]
       }
     }

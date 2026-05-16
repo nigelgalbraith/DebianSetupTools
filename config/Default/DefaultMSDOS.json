@@ -6,8 +6,8 @@
         "Name": "The Secret of Monkey Island",
         "DownloadURL": "https://archive.org/download/monkey_dos/MONKEY.zip",
         "DownloadPath": "/tmp/dos_downloads",
-        "ExtractTo": "/srv/dosgames/monkey",
-        "CheckPath": "/srv/dosgames/monkey",
+        "ExtractTo": "/srv/DOSGames/monkey",
+        "CheckPath": "/srv/DOSGames/monkey",
         "StripTopLevel": true,
         "DosGroups": ["dosgamers"],
         "DosUsers": ["user1","user2"],
@@ -15,21 +15,21 @@
         "ChownUser": "user1",
         "ChownRecursive": true,
         "ChownPaths": [
-          {"path": "/srv/dosgames/monkey"}
+          {"path": "/srv/DOSGames/monkey"}
         ],
         "ChmodPaths": [
-          {"path": "/srv/dosgames/monkey",
+          {"path": "/srv/DOSGames/monkey",
             "mode": "2775",
             "recursive": true
           }
         ],
-        "LaunchCmd": "dosbox -c \"mount c /srv/dosgames/monkey\" -c \"c:\" -c \"monkey.exe\"",
-        "Icon": "/srv/dosgames/icons/monkey.png",
+        "LaunchCmd": "dosbox -c \"mount c /srv/DOSGames/monkey\" -c \"c:\" -c \"monkey.exe\"",
+        "Icon": "/srv/DOSGames/icons/monkey.png",
         "IconFile":   [
           {
             "copyName": "DOS Icons",
             "src": "settings/dosgameIcons/monkey.png",
-            "dest": "/srv/dosgames/icons/monkey.png"
+            "dest": "/srv/DOSGames/icons/monkey.png"
           }
         ],
         "Category": "Game;",
@@ -37,7 +37,7 @@
         "Notes": "Runs in DOSBox. Default launch assumes MONKEY.EXE is present.",
         "ProtectedFolders": [
           {
-            "path": "/srv/dosgames",
+            "path": "/srv/DOSGames",
             "owner": "root",
             "group": "dosgamers",
             "permissions": "3775"

@@ -21,7 +21,12 @@ def create_desktop_entry(
         print(f"[INFO] Applications directory: {applications_dir}")
         applications_dir.mkdir(parents=True, exist_ok=True)
         safe_name = name.replace(" ", "_")
+        if category and not category.endswith(";"):
+            category += ";"
         desktop_path = applications_dir / f"{safe_name}.desktop"
+        if desktop_path.exists():
+            print(f"[INFO] Removing existing desktop entry: {desktop_path}")
+            desktop_path.unlink()
         print(f"[INFO] Desktop file path: {desktop_path}")
         desktop_content = "\n".join([
             "[Desktop Entry]",
@@ -71,7 +76,7 @@ def refresh_desktop_database() -> bool:
     """Refresh desktop launcher/icon caches."""
     try:
         commands = [
-            ["update-desktop-database", str(Path.home() / ".local/share/applications")],
+            ["update-desktop-database", "/usr/share/applications"],
         ]
         if shutil.which("kbuildsycoca6"):
             commands.append(["kbuildsycoca6"])

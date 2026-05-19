@@ -57,8 +57,8 @@ def _strip_top_level_dir(extract_to: Path) -> None:
         for child in top.iterdir():
             shutil.move(str(child), str(Path(extract_to) / child.name))
         shutil.rmtree(top)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[ERROR] StripTopLevel failed for {extract_to}: {e}")
 
 # ---------------------------------------------------------------------
 # DOWNLOAD
